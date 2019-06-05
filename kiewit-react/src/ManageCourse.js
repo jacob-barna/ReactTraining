@@ -1,4 +1,6 @@
 import React, { Component } from "react";
+import { saveCourse } from "./api/courseApi";
+import { Redirect } from "react-router-dom";
 
 class ManageCourse extends Component {
   state = {
@@ -6,7 +8,8 @@ class ManageCourse extends Component {
       title: "",
       authorId: null,
       category: ""
-    }
+    },
+    redirectToCoursesPage: false
   };
 
   handleChange = ({ target }) => {
@@ -20,9 +23,19 @@ class ManageCourse extends Component {
     });
   };
 
-  handleSubmit = event => {};
+  handleSubmit = event => {
+    event.preventDefault(); //no reload
+    saveCourse(this.state.course).then(() => {
+      //save complete
+      this.setState({ redirectToCoursesPage: true });
+    });
+  };
 
   render() {
+    if (this.state.redirectToCoursesPage) {
+      return <Redirect to="courses" />;
+    }
+
     return (
       <>
         <h1>Manage Course</h1>

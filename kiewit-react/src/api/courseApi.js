@@ -27,6 +27,16 @@ export async function deleteCourse(courseID) {
   // .catch(handleError);
 }
 
+export function saveCourse(course) {
+  return fetch(`${BASE_URL}courses`, {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify(course)
+  })
+    .then(handleResponse)
+    .catch(handleError);
+}
+
 export function handleError(error) {
   console.error("API call failed." + error);
   //let caller know that something went wrong
