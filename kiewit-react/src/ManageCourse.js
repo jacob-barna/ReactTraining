@@ -1,6 +1,8 @@
 import React, { Component } from "react";
 import { saveCourse } from "./api/courseApi";
 import { Redirect } from "react-router-dom";
+import { PropTypes } from "prop-types";
+import { course } from "./propTypes";
 
 class ManageCourse extends Component {
   state = {
@@ -15,7 +17,7 @@ class ManageCourse extends Component {
   handleChange = ({ target }) => {
     const course = {
       ...this.state.course,
-      [target.name]: target.value
+      [target.name]: target.name === "authorId" ? +target.value : target.value
     };
 
     this.setState({
@@ -80,4 +82,8 @@ class ManageCourse extends Component {
   }
 }
 
+ManageCourse.propTypes = {
+  courses: PropTypes.arrayOf(course).isRequired,
+  loadCourses: PropTypes.func.isRequired
+};
 export default ManageCourse;

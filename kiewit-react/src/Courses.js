@@ -1,10 +1,16 @@
 import React from "react";
-
+import PropTypes from "prop-types";
 import { Link } from "react-router-dom";
+import { course } from "./propTypes";
 
 //function component - React components should start with a capital letter
 //this is a convention of the framework - it looks for components when caps used
 class Courses extends React.Component {
+  static propTypes = {
+    courses: PropTypes.arrayOf(course).isRequired,
+    loadCourses: PropTypes.func.isRequired
+  };
+
   componentDidMount() {
     this.props.loadCourses();
   }
