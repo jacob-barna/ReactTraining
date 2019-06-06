@@ -28,8 +28,10 @@ export async function deleteCourse(courseID) {
 }
 
 export function saveCourse(course) {
-  return fetch(`${BASE_URL}courses`, {
-    method: "POST",
+  const url = BASE_URL + "courses" + (course.id ? "/" + course.id : "");
+
+  return fetch(url, {
+    method: course.id ? "PUT" : "POST",
     headers: { "content-type": "application/json" },
     body: JSON.stringify(course)
   })
