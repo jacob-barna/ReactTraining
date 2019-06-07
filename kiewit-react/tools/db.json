@@ -7,13 +7,6 @@
   },
   "courses": [
     {
-      "id": 1,
-      "title": "Securing12345 React Apps with Auth0",
-      "slug": "react-auth0-authentication-security",
-      "authorId": 123456,
-      "category": "JavaScript"
-    },
-    {
       "id": 2,
       "title": "React: The Big Picture",
       "slug": "react-big-picture",
@@ -75,22 +68,6 @@
       "slug": "web-components-shadow-dom",
       "authorId": 1,
       "category": "HTML5"
-    },
-    {
-      "title": "asdf",
-      "authorId": 123,
-      "category": "234",
-      "createdAt": 1559834599930,
-      "slug": "asdf",
-      "id": 11
-    },
-    {
-      "title": "123",
-      "authorId": 213,
-      "category": "123",
-      "createdAt": 1559835054615,
-      "slug": "123",
-      "id": 12
     }
   ],
   "authors": [

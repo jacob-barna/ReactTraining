@@ -1,5 +1,6 @@
 import React from "react";
 import PropTypes from "prop-types";
+import styles from "./TextInput.module.scss";
 
 const TextInput = ({ id, label, name, onChange, value, error }) => {
   return (
@@ -13,7 +14,11 @@ const TextInput = ({ id, label, name, onChange, value, error }) => {
         onChange={onChange}
         value={value}
       />
-      {error && <div className="alert alert-danger">{error}</div>}
+      {error && (
+        <div role="alert" className={styles.error}>
+          {error}
+        </div>
+      )}
     </div>
   );
 };

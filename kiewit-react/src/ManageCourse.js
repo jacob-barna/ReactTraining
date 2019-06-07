@@ -2,38 +2,79 @@ import React, { useState, useEffect } from "react";
 import { saveCourse } from "./api/courseApi";
 import { Redirect } from "react-router-dom";
 import { PropTypes } from "prop-types";
-import TextInput from "./TextInput";
+import TextInput from "./shared/TextInput";
 import { course } from "./propTypes";
 import { toast } from "react-toastify";
+import Spinner from "./shared/Spinner/Spinner";
+// Hoist funcs that don't need props or state outside of your functions.
+// https://overreacted.io/a-complete-guide-to-useeffect/#tldr
+function getCourseBySlug(courses, slug) {
+  const course = courses.find(course => course.slug === slug);
+  return course;
+}
 
-function ManageCourse({ courses, loadCourses, match }) {
+function ManageCourse({ courses, loadCourses, match, history }) {
   const [course, setCourse] = useState({
     title: "",
     authorId: null,
     category: ""
   });
 
+  const [isLoading, setIsLoading] = useState(true);
+
   const [redirectToCoursesPage, setRedirectToCoursesPage] = useState(false);
+  const [errors, setErrors] = useState({});
 
   useEffect(() => {
-    //tslint:disable-next-line
-    async function load() {
-      const slug = match.params.slug;
-
-      if (slug) {
-        if (courses.length === 0) {
-          const theCourses = await loadCourses();
-          const course = theCourses.find(course => course.slug === slug);
-          setCourse(course);
-        } else {
-          const course = courses.find(course => course.slug === slug);
-          setCourse(course);
-        }
+    const { slug } = match.params;
+    if (slug) {
+      if (courses.length === 0) {
+        loadCourses().then(_courses => {
+          const course = getCourseBySlug(_courses, slug);
+          setIsLoading(false);
+          course ? setCourse(course) : history.push("/404");
+        });
+      } else {
+        const course = getCourseBySlug(courses, slug);
+        setIsLoading(false);
+        course ? setCourse(course) : history.push("/404");
       }
+    } else {
+      setIsLoading(false);
     }
+  }, [courses, history, loadCourses, match.params]);
+  // useEffect(() => {
+  //   //tslint:disable-next-line
+  //   // async function load() {
+  //   //   console.log(errors.title);
+  //   const slug = match.params.slug;
 
-    load();
-  }, [courses, loadCourses, match.params]);
+  //   //   if (slug) {
+  //   //     if (courses.length === 0) {
+  //   //       const theCourses = await loadCourses();
+  //   //       const course = theCourses.find(course => course.slug === slug);
+  //   //       setCourse(course);
+  //   //     } else {
+  //   //       const course = courses.find(course => course.slug === slug);
+  //   //       setCourse(course);
+  //   //     }
+  //   //   }
+  //   // }
+
+  //   // load();
+
+  //   //  if (slug) {
+  //   if (courses.length === 0) {
+  //     loadCourses().then(theCourses => {
+  //       const course = theCourses.find(course => course.slug === slug);
+  //       course ? setCourse(course) : history.push("/404");
+  //     });
+  //     //  }
+  //   } else {
+  //     const course = courses.find(course => course.slug === slug);
+  //     course ? setCourse(course) : history.push("/404");
+  //   }
+  // }, [courses, history, loadCourses, match.params]);
 
   function handleChange({ target }) {
     const theCourse = {
@@ -43,8 +84,21 @@ function ManageCourse({ courses, loadCourses, match }) {
     setCourse(theCourse);
   }
 
+  function isValid() {
+    const _errors = {};
+    if (!course.title) _errors.title = "Title required.";
+    if (!course.authorId) _errors.authorId = "authorId required.";
+    if (!course.category) _errors.category = "category required.";
+
+    setErrors(_errors);
+    console.log(errors.title);
+    return Object.keys(_errors).length === 0;
+  }
+
   function handleSubmit(event) {
     event.preventDefault(); //no reload
+    if (!isValid()) return;
+
     saveCourse(course).then(() => {
       //load courses again so that the saved record is reflected on the courses page
       loadCourses().then(() => {
@@ -57,6 +111,10 @@ function ManageCourse({ courses, loadCourses, match }) {
 
   if (redirectToCoursesPage) {
     return <Redirect to="/courses" />;
+  }
+
+  if (isLoading) {
+    return <Spinner />;
   }
 
   return (
@@ -81,6 +139,7 @@ function ManageCourse({ courses, loadCourses, match }) {
           name="title"
           onChange={handleChange}
           value={course.title}
+          error={errors.title}
         />
 
         <div>
@@ -92,6 +151,7 @@ function ManageCourse({ courses, loadCourses, match }) {
             name="authorId"
             type="text"
             value={course.authorId || ""}
+            errors={errors.authorId}
           />
         </div>
         <div>
@@ -103,6 +163,7 @@ function ManageCourse({ courses, loadCourses, match }) {
             name="category"
             type="text"
             value={course.category}
+            errors={errors.category}
           />
         </div>
         <input type="submit" className="btn btn-primary" value="Save" />
