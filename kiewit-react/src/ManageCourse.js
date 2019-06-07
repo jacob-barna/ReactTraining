@@ -6,6 +6,7 @@ import TextInput from "./shared/TextInput";
 import { course } from "./propTypes";
 import { toast } from "react-toastify";
 import Spinner from "./shared/Spinner/Spinner";
+import SubmitButton from "./shared/SubmitButton";
 // Hoist funcs that don't need props or state outside of your functions.
 // https://overreacted.io/a-complete-guide-to-useeffect/#tldr
 function getCourseBySlug(courses, slug) {
@@ -21,7 +22,7 @@ function ManageCourse({ courses, loadCourses, match, history }) {
   });
 
   const [isLoading, setIsLoading] = useState(true);
-
+  const [formSubmitted, setFormSubmitted] = useState(false);
   const [redirectToCoursesPage, setRedirectToCoursesPage] = useState(false);
   const [errors, setErrors] = useState({});
 
@@ -98,6 +99,7 @@ function ManageCourse({ courses, loadCourses, match, history }) {
   function handleSubmit(event) {
     event.preventDefault(); //no reload
     if (!isValid()) return;
+    setFormSubmitted(true);
 
     saveCourse(course).then(() => {
       //load courses again so that the saved record is reflected on the courses page
@@ -142,7 +144,25 @@ function ManageCourse({ courses, loadCourses, match, history }) {
           error={errors.title}
         />
 
-        <div>
+        <TextInput
+          label="Author ID"
+          id="authorId"
+          name="authorId"
+          onChange={handleChange}
+          value={course.authorId}
+          error={errors.authorId}
+        />
+
+        <TextInput
+          label="Category"
+          id="category"
+          name="category"
+          onChange={handleChange}
+          value={course.category}
+          error={errors.category}
+        />
+
+        {/* <div>
           <label htmlFor="authorId">Author Id</label>
           <br />
           <input
@@ -165,8 +185,8 @@ function ManageCourse({ courses, loadCourses, match, history }) {
             value={course.category}
             errors={errors.category}
           />
-        </div>
-        <input type="submit" className="btn btn-primary" value="Save" />
+        </div> */}
+        <SubmitButton value="Save" isLoading={formSubmitted} />
       </form>
     </>
   );
